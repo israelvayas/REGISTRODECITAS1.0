@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Inicio Interactivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        /* Animación para el contenido */
+        #main-content > div {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Estilos para el buscador dinámico */
+        #treatment-results, #edit-treatment-results {
+            max-height: 200px;
+            overflow-y: auto;
+            border-top: none;
+        }
+        /* Estilos para los botones de cita */
+        .cita-button.selected {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            border-color: #3b82f6;
+        }
+        /* Estilos para el modal */
+         .modal-content {
+            animation: zoomIn 0.3s ease-out;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container" class="min-h-screen">
+        <!-- Barra de Navegación Superior -->
+        <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <!-- Logo y Menú Principal -->
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 text-gray-800 font-bold text-xl">
+                            Mi App
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-4">
+                                <button data-target="registro-citas" class="nav-button bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Registro Citas</button>
+                                <button data-target="control-unidades" class="nav-button text-gray-700 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Control Unidades</button>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Selectores de Responsable y Piso -->
+                    <div class="hidden md:flex items-center space-x-4">
+                        <div>
+                            <label for="responsable-select" class="sr-only">Responsable</label>
+                            <div class="flex items-center">
+                                <select id="responsable-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"></select>
+                                <button id="edit-responsables-button" class="ml-2 p-1 text-gray-500 hover:text-gray-800">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828zM5 12V7a2 2 0 012-2h2.586l-4.586 4.586V12zM15 14H5a2 2 0 01-2-2V5a2 2 0 012-2h4.586l2-2h-2.172a4 4 0 00-4 4v10a4 4 0 004 4h10a4 4 0 004-4v-2.172l-2 2V14z"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="piso-select" class="sr-only">Piso</label>
+                            <select id="piso-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option>SUBSUELO</option>
+                                <option>PLANTA BAJA</option>
+                                <option>PISO 1</option>
+                                <option>PISO 2</option>
+                                <option>PISO 3</option>
+                            </select>
+                        </div>
+                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium">Salir</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main>
+            <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div id="main-content" class="px-4 py-6 sm:px-0">
+                    <!-- El contenido de las pestañas se cargará aquí -->
+                </div>
+            </div>
+        </main>
+        
+        <!-- Modal para ver todos los registros -->
+        <div id="all-records-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[90vh] flex flex-col modal-content">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-800">Todos los Registros</h2>
+                    <button id="close-modal-button" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+                </div>
+                <div class="p-4 flex justify-between items-center">
+                    <input type="text" id="search-records-input" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Buscar en todos los campos...">
+                    <button id="export-xlsx-button" class="ml-4 bg-blue-600 text-white px-4 py-2 rounded-md whitespace-nowrap hover:bg-blue-700">Exportar a XLSX</button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4">
+                    <table class="min-w-full bg-white">
+                        <thead class="bg-gray-800 text-white sticky top-0">
+                            <tr>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Factura</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Fecha</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tratamiento</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Cita</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Responsable</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Piso</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Observaciones</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-records-table-body" class="text-gray-700"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para editar responsables -->
+        <div id="edit-responsables-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
+             <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-content">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-800">Editar Responsables</h2>
+                    <button id="close-edit-modal-button" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+                </div>
+                <div class="p-4 space-y-4">
+                    <div>
+                        <label for="new-responsable-input" class="block text-sm font-medium text-gray-700">Agregar nuevo responsable:</label>
+                        <div class="mt-1 flex">
+                            <input type="text" id="new-responsable-input" class="flex-1 p-2 border border-gray-300 rounded-l-md" placeholder="Nombre Apellido">
+                            <button id="add-responsable-button" class="bg-indigo-600 text-white px-4 py-2 rounded-r-md">Agregar</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800">Lista Actual:</h3>
+                        <ul id="responsables-list-editor" class="mt-2 space-y-2 max-h-60 overflow-y-auto"></ul>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 text-right rounded-b-lg">
+                    <button id="save-responsables-button" class="bg-green-600 text-white px-4 py-2 rounded-md">Guardar y Cerrar</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal para editar registro -->
+        <div id="edit-record-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-xl modal-content">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-800">Editar Registro</h2>
+                    <button id="close-edit-record-modal-button" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+                </div>
+                <div class="p-6 max-h-[80vh] overflow-y-auto">
+                    <form id="edit-cita-form" class="space-y-4">
+                        <input type="hidden" id="edit-record-id">
+                        <div><label for="edit-appointment-date" class="block text-sm font-medium text-gray-700">Fecha</label><input type="date" id="edit-appointment-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
+                        <div><label for="edit-factura-full" class="block text-sm font-medium text-gray-700">Número de Factura</label><input type="text" id="edit-factura-full" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
+                        <div><label for="edit-treatment-search" class="block text-sm font-medium text-gray-700">Tratamiento</label><div class="relative mt-1"><input type="text" id="edit-treatment-search" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" placeholder="Escribe para buscar..." autocomplete="off" required><div id="edit-treatment-results" class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-lg hidden"></div></div></div>
+                        <div id="edit-specialty-selector-container" class="hidden"><label for="edit-specialty-select" class="block text-sm font-medium text-gray-700">Especialidad (especificar)</label><select id="edit-specialty-select" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></select></div>
+                        <div><label class="block text-sm font-medium text-gray-700">Número de Cita</label><div class="mt-1 flex flex-wrap gap-2" id="edit-cita-selector"><button type="button" data-cita="1" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">1ra</button><button type="button" data-cita="2" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">2da</button><button type="button" data-cita="3" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">3ra</button><button type="button" data-cita="4" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">4ta</button><button type="button" data-cita="5" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">5ta</button><button type="button" data-cita="Resto de Material" class="cita-button border text-sm border-gray-300 rounded-md px-2 h-10">Resto Mat.</button></div></div>
+                        <div><label for="edit-responsable-select" class="block text-sm font-medium text-gray-700">Responsable</label><select id="edit-responsable-select" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></select></div>
+                        <div><label for="edit-piso-select" class="block text-sm font-medium text-gray-700">Piso</label><select id="edit-piso-select" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"><option>SUBSUELO</option><option>PLANTA BAJA</option><option>PISO 1</option><option>PISO 2</option><option>PISO 3</option></select></div>
+                        <div><label for="edit-observaciones" class="block text-sm font-medium text-gray-700">Observaciones</label><textarea id="edit-observaciones" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></textarea></div>
+                        <div class="pt-4 flex justify-end space-x-2">
+                             <button type="button" id="cancel-edit-button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md">Cancelar</button>
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- CONFIGURACIÓN DE FIREBASE ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyDsVgLJx1EFPGNLIM37hc6PjOuPlQ13AhQ",
+          authDomain: "registro-y-control-odonto.firebaseapp.com",
+          projectId: "registro-y-control-odonto",
+          storageBucket: "registro-y-control-odonto.appspot.com",
+          messagingSenderId: "855602758465",
+          appId: "1:855602758465:web:f6c84a7a21c7c716e117c0"
+        };
+
+        const mainContent = document.getElementById('main-content');
+        const navButtons = document.querySelectorAll('.nav-button');
+        
+        let allRecords = [];
+        let responsables = [];
+        let db, recordsCollection;
+        let editSelectedTreatmentObject = null;
+
+        // --- FIREBASE SETUP ---
+        async function setupFirebase() {
+             if (!firebaseConfig.apiKey) {
+                console.error("La configuración de Firebase está vacía. La app usará almacenamiento local.");
+                alert("Configuración de Firebase no encontrada. Los datos se guardarán localmente en este navegador y no se sincronizarán en la nube.");
+                allRecords = JSON.parse(localStorage.getItem('allRecords')) || [];
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                const auth = getAuth(app);
+                await signInAnonymously(auth);
+                
+                recordsCollection = collection(db, "registros");
+                
+                const q = query(recordsCollection, orderBy('timestamp', 'desc'));
+                onSnapshot(q, (querySnapshot) => {
+                    allRecords = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                    if(document.getElementById('citas-list')) {
+                        renderRecentRecords();
+                    }
+                     if(document.getElementById('all-records-modal').classList.contains('hidden') === false) {
+                        const viewAllButton = document.getElementById('view-all-button');
+                        if(viewAllButton) viewAllButton.click();
+                     }
+                }, (error) => {
+                    console.error("Error en el snapshot de Firestore: ", error);
+                    alert("Error al recibir datos de la nube. Es posible que las reglas de seguridad de Firestore no estén configuradas correctamente.");
+                });
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                alert("Error al conectar con la base de datos en la nube. Revisa tu configuración de Firebase.");
+                allRecords = JSON.parse(localStorage.getItem('allRecords')) || [];
+            }
+        }
+        
+        function saveAllRecords() {
+            if (!db) { 
+                localStorage.setItem('allRecords', JSON.stringify(allRecords));
+            }
+        }
+
+        const pages = {
+            'registro-citas': `
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-6">Registro de Facturas</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Nueva Factura</h2>
+                            <form id="cita-form" class="space-y-4">
+                                <div><label for="appointment-date" class="block text-sm font-medium text-gray-700">Fecha</label><input type="date" id="appointment-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
+                                <div><label for="factura-prefix" class="block text-sm font-medium text-gray-700">Número de Factura</label><div class="mt-1 flex rounded-md shadow-sm"><select id="factura-prefix" class="block w-1/2 px-3 py-2 border border-gray-300 rounded-l-md"><option>002-214-0000</option><option>002-215-0000</option></select><input type="text" id="factura-suffix" class="block w-1/2 px-3 py-2 border border-l-0 border-gray-300 rounded-r-md" placeholder="12345" maxlength="5" pattern="\\d{5}" required></div><p id="factura-display" class="mt-2 text-sm text-gray-500">#Factura: -</p></div>
+                                <div><label for="treatment-search" class="block text-sm font-medium text-gray-700">Tratamiento</label><div class="relative mt-1"><input type="text" id="treatment-search" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" placeholder="Escribe para buscar..." autocomplete="off" required><div id="treatment-results" class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-lg hidden"></div></div></div>
+                                <div><label class="block text-sm font-medium text-gray-700">Número de Cita</label><div class="mt-1 flex flex-wrap gap-2" id="cita-selector"><button type="button" data-cita="1" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">1ra</button><button type="button" data-cita="2" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">2da</button><button type="button" data-cita="3" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">3ra</button><button type="button" data-cita="4" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">4ta</button><button type="button" data-cita="5" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">5ta</button><button type="button" data-cita="Resto de Material" class="cita-button border text-sm border-gray-300 rounded-md px-2 h-10 flex items-center justify-center hover:bg-gray-100">Resto Mat.</button></div></div>
+                                <div><label for="observaciones" class="block text-sm font-medium text-gray-700">Observaciones</label><textarea id="observaciones" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></textarea></div>
+                                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Guardar Registro</button>
+                            </form>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Últimos 5 Registros</h2>
+                            <ul id="citas-list" class="space-y-3"></ul>
+                             <button id="view-all-button" class="mt-4 w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300">Ver Todos los Registros</button>
+                        </div>
+                    </div>
+                </div>`,
+            'control-unidades': `
+                 <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h1 class="text-3xl font-bold text-gray-900">Control de Unidades</h1>
+                    <table class="min-w-full bg-white mt-6">
+                        <thead class="bg-gray-800 text-white"><tr><th class="w-1/3 text-left py-3 px-4 uppercase font-semibold text-sm">Unidad</th><th class="w-1/3 text-left py-3 px-4 uppercase font-semibold text-sm">Estado</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Acciones</th></tr></thead>
+                        <tbody class="text-gray-700"><tr><td class="text-left py-3 px-4">Sillón Odontológico #1</td><td class="text-left py-3 px-4"><span class="bg-green-200 text-green-800 py-1 px-3 rounded-full text-xs">Activo</span></td><td class="text-left py-3 px-4"><button class="text-blue-500 hover:text-blue-700">Editar</button></td></tr></tbody>
+                    </table>
+                </div>`
+        };
+
+        const treatments = [
+            { name: 'RASPADO Y ALISADO RADICULAR A CAMPO CERRADO', specialty: 'PERIODONCIA' }, { name: 'GINGIVECTOMIA POR ARCADA', specialty: 'PERIODONCIA' }, { name: 'ALARGAMIENTO CORONARIO', specialty: 'PERIODONCIA' }, { name: 'FRENECTOMIA', specialty: 'PERIODONCIA' }, { name: 'PROFILAXIS Y APLICACIÓN FLÚOR', specialty: 'OPERATORIA DENTAL' }, { name: 'SELLANTES', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA SIMPLE', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA COMPUESTA', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA COMPLEJA', specialty: 'OPERATORIA DENTAL' }, { name: 'PROTESIS TOTAL SUPERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS TOTAL INFERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL SUPERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL INFERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL SUPERIOR CROMO COBALTO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL INFERIOR CROMO COBALTO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'CORONAS METAL PORCELANA INDIVIDUALES', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PUENTE FIJO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PERNO DE FIBRA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'INCRUSTACIÓN', specialty: 'REHABILITACIÓN ORAL' }, { name: 'ENDODONCIA ANTERIORES (1 CONDUCTO) INCLUYE 5RXS', specialty: 'ENDODONCIA' }, { name: 'ENDODONCIA PREMOLARES (1-2-3 CONDUCTO) INCLUYE 5RXS', specialty: 'ENDODONCIA' }, { name: 'ALIVIO DEL DOLOR', specialty: 'ENDODONCIA' }, { name: 'PROFILAXIS-FLUORIZACIÓN', specialty: 'ODONTOPEDIATRÍA' }, { name: 'PROFILAXIS CON FLUORIZACIÓN CLINPRO FLUOR', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS SIMPLES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS COMPUESTOS', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS COMPLEJOS', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA SIMPLE', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA COMPUESTA', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA COMPLEJA', specialty: 'ODONTOPEDIATRÍA' }, { name: 'SELLANTES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'EXODONCIAS SIMPLES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'ENDODONCIAS INFANTIL', specialty: 'ODONTOPEDIATRÍA' }, { name: 'MANTENEDOR DE ESPACIO', specialty: 'ODONTOPEDIATRÍA' }, { name: 'CARILLA / CORONA DE CELULOIDE', specialty: 'ODONTOPEDIATRÍA' }, { name: 'EXODONCIA SIMPLE', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR SIMPLE', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR COMPLEJO', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR CIRUGÍA', specialty: 'CIRUGÍA' }, { name: 'OPERCULOTOMÍA', specialty: 'CIRUGÍA' }, { name: 'REGULARIZACION DE REBORDE', specialty: 'CIRUGÍA' }, { name: 'PORCIONES EXTRAS', specialty: 'VARIOS' }
+        ];
+
+        function switchTab(targetId) {
+            mainContent.innerHTML = pages[targetId] || pages['registro-citas'];
+            if (targetId === 'registro-citas') setupCitasTab();
+            navButtons.forEach(btn => {
+                btn.classList.toggle('bg-gray-900', btn.dataset.target === targetId);
+                btn.classList.toggle('text-white', btn.dataset.target === targetId);
+                btn.classList.toggle('text-gray-700', btn.dataset.target !== targetId);
+            });
+        }
+        
+        function formatToShortDate(dateString) { // YYYY-MM-DD
+            if (!dateString || !dateString.includes('-')) return dateString;
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        function setupCitasTab() {
+            const dateInput = document.getElementById('appointment-date'),
+                  facturaPrefix = document.getElementById('factura-prefix'),
+                  facturaSuffix = document.getElementById('factura-suffix'),
+                  facturaDisplay = document.getElementById('factura-display'),
+                  searchInput = document.getElementById('treatment-search'),
+                  resultsContainer = document.getElementById('treatment-results'),
+                  citaButtons = document.querySelectorAll('.cita-button'),
+                  observacionesInput = document.getElementById('observaciones'),
+                  citaForm = document.getElementById('cita-form'),
+                  citasList = document.getElementById('citas-list'),
+                  viewAllButton = document.getElementById('view-all-button');
+            
+            let selectedTreatmentObject = null;
+            dateInput.value = new Date().toISOString().split('T')[0];
+
+            function updateFacturaDisplay() {
+                facturaDisplay.textContent = `#Factura: ${facturaPrefix.value}${facturaSuffix.value.padStart(5, '0')}`;
+            }
+            [facturaPrefix, facturaSuffix].forEach(el => el.addEventListener('input', updateFacturaDisplay));
+            facturaSuffix.addEventListener('keypress', (e) => { if (!/\d/.test(e.key)) e.preventDefault(); });
+            updateFacturaDisplay();
+
+            searchInput.addEventListener('input', () => {
+                selectedTreatmentObject = null;
+                const query = searchInput.value.toLowerCase();
+                resultsContainer.classList.toggle('hidden', !query);
+                if (!query) return;
+
+                const filtered = treatments.filter(t => t.name.toLowerCase().includes(query));
+                resultsContainer.innerHTML = '';
+                filtered.forEach(treatment => {
+                    const item = document.createElement('a');
+                    item.href = '#';
+                    item.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100';
+                    item.innerHTML = `${treatment.name} <span class="text-xs text-gray-500">(${treatment.specialty})</span>`;
+                    item.onclick = (e) => {
+                        e.preventDefault();
+                        searchInput.value = treatment.name;
+                        selectedTreatmentObject = treatment;
+                        resultsContainer.classList.add('hidden');
+                    };
+                    resultsContainer.appendChild(item);
+                });
+            });
+
+            citaButtons.forEach(button => button.onclick = () => {
+                const wasSelected = button.classList.contains('selected');
+                citaButtons.forEach(btn => btn.classList.remove('selected'));
+                if (!wasSelected) button.classList.add('selected');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target)) resultsContainer.classList.add('hidden');
+            });
+
+            citaForm.onsubmit = async (e) => {
+                e.preventDefault();
+                if (!selectedTreatmentObject) selectedTreatmentObject = treatments.find(t => t.name.toLowerCase() === searchInput.value.toLowerCase()) || { name: searchInput.value, specialty: 'N/A' };
+                const citaSel = document.querySelector('.cita-button.selected');
+                let citaTxt = '';
+                if(citaSel) {
+                    const citaVal = citaSel.dataset.cita;
+                    citaTxt = citaVal === 'Resto de Material' ? ` (${citaVal})` : ` (${citaSel.textContent} Cita)`;
+                }
+                const facturaNumero = `${facturaPrefix.value}${facturaSuffix.value.padStart(5, '0')}`;
+
+                const newRecord = {
+                    fecha: dateInput.value,
+                    factura: facturaNumero,
+                    tratamiento: selectedTreatmentObject.name,
+                    specialty: selectedTreatmentObject.specialty,
+                    numeroCita: citaTxt,
+                    observaciones: observacionesInput.value,
+                    responsable: document.getElementById('responsable-select').value,
+                    piso: document.getElementById('piso-select').value,
+                    timestamp: serverTimestamp()
+                };
+                
+                if (db) {
+                     await addDoc(recordsCollection, newRecord);
+                } else {
+                    newRecord.id = Date.now();
+                    allRecords.unshift(newRecord);
+                    saveAllRecords();
+                    renderRecentRecords();
+                }
+                
+                citaForm.reset();
+                selectedTreatmentObject = null;
+                dateInput.value = new Date().toISOString().split('T')[0];
+                citaButtons.forEach(btn => btn.classList.remove('selected'));
+                updateFacturaDisplay();
+            };
+
+            citasList.onclick = async (e) => {
+                const targetButton = e.target.closest('button');
+                if (!targetButton) return;
+
+                const li = targetButton.closest('li');
+                const recordId = li.dataset.id;
+
+                if (targetButton.classList.contains('delete-button')) {
+                    if (db) {
+                       await deleteDoc(doc(db, "registros", recordId));
+                    } else {
+                        allRecords = allRecords.filter(r => r.id.toString() !== recordId.toString());
+                        saveAllRecords();
+                        renderRecentRecords();
+                    }
+                } else if (targetButton.classList.contains('edit-button')) {
+                    openEditModal(recordId);
+                }
+            };
+
+            viewAllButton.onclick = () => {
+                const modal = document.getElementById('all-records-modal'),
+                      tableBody = document.getElementById('all-records-table-body'),
+                      searchInputModal = document.getElementById('search-records-input'),
+                      exportButton = document.getElementById('export-xlsx-button');
+                
+                function renderAll(records) {
+                    tableBody.innerHTML = '';
+                    records.forEach(r => {
+                        const row = tableBody.insertRow();
+                        row.dataset.id = r.id;
+                        row.innerHTML = `<td class="text-left py-3 px-4">${r.factura}</td><td class="text-left py-3 px-4">${formatToShortDate(r.fecha)}</td><td class="text-left py-3 px-4">${r.tratamiento} / ${r.specialty}</td><td class="text-left py-3 px-4">${r.numeroCita.replace(/[()]/g, '')}</td><td class="text-left py-3 px-4">${r.responsable}</td><td class="text-left py-3 px-4">${r.piso}</td><td class="text-left py-3 px-4">${r.observaciones}</td><td class="text-left py-3 px-4"><button class="edit-button text-blue-500 hover:text-blue-700">Editar</button></td>`;
+                    });
+                }
+                
+                tableBody.onclick = (e) => {
+                    if (e.target.classList.contains('edit-button')) {
+                        const row = e.target.closest('tr');
+                        openEditModal(row.dataset.id);
+                    }
+                }
+
+                renderAll(allRecords);
+                modal.classList.remove('hidden');
+                searchInputModal.value = '';
+                searchInputModal.oninput = () => {
+                    const q = searchInputModal.value.toLowerCase();
+                    renderAll(allRecords.filter(r => Object.values(r).some(val => String(val).toLowerCase().includes(q))));
+                };
+                 exportButton.onclick = () => exportToXlsx('registros_facturas.xlsx', allRecords);
+            };
+            
+            renderRecentRecords();
+        }
+
+        function renderRecentRecords() {
+            const citasList = document.getElementById('citas-list');
+            if(!citasList) return;
+            citasList.innerHTML = '';
+            allRecords.slice(0, 5).forEach(record => citasList.appendChild(createRecordListItem(record)));
+        }
+
+        function createRecordListItem(record) {
+            const li = document.createElement('li');
+            li.className = 'bg-gray-50 p-4 rounded-md shadow-sm';
+            li.dataset.id = record.id;
+            li.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-semibold text-gray-800">${record.factura}</p>
+                        <p class="text-sm text-gray-600">Fecha: ${formatToShortDate(record.fecha)}</p>
+                        <p class="text-sm text-gray-600 font-medium">Tratamiento: ${record.tratamiento} / ${record.specialty}${record.numeroCita}</p>
+                        <p class="text-sm text-gray-500">Resp: ${record.responsable} - Piso: ${record.piso}</p>
+                        ${record.observaciones ? `<p class="text-xs text-gray-500 mt-1"><em>Obs: ${record.observaciones}</em></p>` : ''}
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="edit-button text-blue-500 hover:text-blue-700">Editar</button>
+                        <button class="delete-button text-red-500 hover:text-red-700">Eliminar</button>
+                    </div>
+                </div>`;
+            return li;
+        }
+
+        function openEditModal(recordId) {
+            const record = allRecords.find(r => r.id.toString() === recordId.toString());
+            if (!record) return;
+
+            const modal = document.getElementById('edit-record-modal');
+            const idInput = document.getElementById('edit-record-id');
+            const dateInput = document.getElementById('edit-appointment-date');
+            const fullFacturaInput = document.getElementById('edit-factura-full');
+            const treatmentInput = document.getElementById('edit-treatment-search');
+            const treatmentResults = document.getElementById('edit-treatment-results');
+            const citaSelector = document.getElementById('edit-cita-selector');
+            const obsInput = document.getElementById('edit-observaciones');
+            const editResponsableSelect = document.getElementById('edit-responsable-select');
+            const editPisoSelect = document.getElementById('edit-piso-select');
+            const specialtyContainer = document.getElementById('edit-specialty-selector-container');
+            const specialtySelect = document.getElementById('edit-specialty-select');
+
+
+            idInput.value = record.id;
+            dateInput.value = record.fecha;
+            fullFacturaInput.value = record.factura.replace('#Factura:', '').trim();
+            treatmentInput.value = record.tratamiento;
+            obsInput.value = record.observaciones;
+
+            editResponsableSelect.innerHTML = document.getElementById('responsable-select').innerHTML;
+            editResponsableSelect.value = record.responsable;
+            editPisoSelect.value = record.piso;
+            
+            const citaButtons = citaSelector.querySelectorAll('.cita-button');
+            citaButtons.forEach(btn => {
+                btn.classList.remove('selected');
+                const btnText = btn.dataset.cita === 'Resto de Material' ? 'Resto de Material' : `${btn.dataset.cita}ra Cita`;
+                if (record.numeroCita.includes(btnText) || record.numeroCita.includes(btn.textContent)) {
+                    btn.classList.add('selected');
+                }
+            });
+
+            citaButtons.forEach(button => button.onclick = () => {
+                const wasSelected = button.classList.contains('selected');
+                citaButtons.forEach(btn => btn.classList.remove('selected'));
+                if (!wasSelected) button.classList.add('selected');
+            });
+            
+            // Lógica de búsqueda predictiva para el modal de edición
+            treatmentInput.addEventListener('input', () => {
+                editSelectedTreatmentObject = null;
+                const query = treatmentInput.value.toLowerCase();
+                treatmentResults.classList.toggle('hidden', !query);
+                if (!query) return;
+
+                const filtered = treatments.filter(t => t.name.toLowerCase().includes(query));
+                treatmentResults.innerHTML = '';
+                filtered.forEach(treatment => {
+                    const item = document.createElement('a');
+                    item.href = '#';
+                    item.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100';
+                    item.innerHTML = `${treatment.name} <span class="text-xs text-gray-500">(${treatment.specialty})</span>`;
+                    item.onclick = (e) => {
+                        e.preventDefault();
+                        treatmentInput.value = treatment.name;
+                        editSelectedTreatmentObject = treatment;
+                        treatmentResults.classList.add('hidden');
+                    };
+                    treatmentResults.appendChild(item);
+                });
+            });
+
+
+            modal.classList.remove('hidden');
+        }
+
+        function setupApp() {
+            const responsableSelect = document.getElementById('responsable-select');
+            const pisoSelect = document.getElementById('piso-select');
+            const editBtn = document.getElementById('edit-responsables-button');
+            const editModal = document.getElementById('edit-responsables-modal');
+            const closeEditModalBtn = document.getElementById('close-edit-modal-button');
+            const newResponsableInput = document.getElementById('new-responsable-input');
+            const addResponsableBtn = document.getElementById('add-responsable-button');
+            const listEditor = document.getElementById('responsables-list-editor');
+            const saveResponsablesBtn = document.getElementById('save-responsables-button');
+            
+            const editRecordModal = document.getElementById('edit-record-modal');
+            const closeEditRecordModalBtn = document.getElementById('close-edit-record-modal-button');
+            const cancelEditBtn = document.getElementById('cancel-edit-button');
+            const editCitaForm = document.getElementById('edit-cita-form');
+
+            const defaultResponsables = ['BRYAN CHAVEZ', 'DIEGO RON', 'ISRAEL VAYAS', 'JACQUELINE ORTIZ', 'MONICA OYASA'];
+
+            function loadResponsables() {
+                const stored = localStorage.getItem('responsables');
+                responsables = stored ? JSON.parse(stored) : [...defaultResponsables];
+                populateResponsableSelect();
+            }
+
+            function populateResponsableSelect() {
+                responsableSelect.innerHTML = '';
+                responsables.forEach(r => {
+                    const option = document.createElement('option');
+                    option.value = r;
+                    option.textContent = r;
+                    responsableSelect.appendChild(option);
+                });
+                const lastSelected = localStorage.getItem('selectedResponsable');
+                if (lastSelected && responsables.includes(lastSelected)) {
+                    responsableSelect.value = lastSelected;
+                }
+            }
+
+            function saveResponsables() {
+                localStorage.setItem('responsables', JSON.stringify(responsables));
+                populateResponsableSelect();
+            }
+
+            responsableSelect.onchange = () => localStorage.setItem('selectedResponsable', responsableSelect.value);
+            pisoSelect.onchange = () => localStorage.setItem('selectedPiso', pisoSelect.value);
+
+            editBtn.onclick = () => {
+                renderEditorList();
+                editModal.classList.remove('hidden');
+            };
+            
+            function renderEditorList() {
+                listEditor.innerHTML = '';
+                responsables.forEach((r, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'flex justify-between items-center p-2 bg-gray-100 rounded';
+                    li.innerHTML = `<span>${r}</span><button data-index="${index}" class="delete-responsable text-red-500 hover:text-red-700 font-bold text-xl">&times;</button>`;
+                    listEditor.appendChild(li);
+                });
+            }
+
+            listEditor.onclick = (e) => {
+                if(e.target.classList.contains('delete-responsable')) {
+                    responsables.splice(e.target.dataset.index, 1);
+                    renderEditorList();
+                }
+            };
+            
+            addResponsableBtn.onclick = () => {
+                const newName = newResponsableInput.value.trim().toUpperCase();
+                if (newName && !responsables.includes(newName)) {
+                    responsables.push(newName);
+                    newResponsableInput.value = '';
+                    renderEditorList();
+                }
+            };
+
+            saveResponsablesBtn.onclick = () => {
+                saveResponsables();
+                editModal.classList.add('hidden');
+            };
+
+            closeEditModalBtn.onclick = () => editModal.classList.add('hidden');
+            
+            closeEditRecordModalBtn.onclick = () => editRecordModal.classList.add('hidden');
+            cancelEditBtn.onclick = () => editRecordModal.classList.add('hidden');
+            
+            editCitaForm.onsubmit = async (e) => {
+                e.preventDefault();
+                
+                const recordId = document.getElementById('edit-record-id').value;
+                const searchInput = document.getElementById('edit-treatment-search');
+                
+                if (!editSelectedTreatmentObject || editSelectedTreatmentObject.name !== searchInput.value) {
+                    editSelectedTreatmentObject = treatments.find(t => t.name.toLowerCase() === searchInput.value.toLowerCase()) || { name: searchInput.value, specialty: 'N/A' };
+                }
+
+                const citaSel = document.getElementById('edit-cita-selector').querySelector('.cita-button.selected');
+                let citaTxt = '';
+                if(citaSel) {
+                    const citaVal = citaSel.dataset.cita;
+                    citaTxt = citaVal === 'Resto de Material' ? ` (${citaVal})` : ` (${citaSel.textContent} Cita)`;
+                }
+                const facturaNumero = document.getElementById('edit-factura-full').value;
+                
+                const updatedRecord = {
+                    fecha: document.getElementById('edit-appointment-date').value,
+                    factura: facturaNumero,
+                    tratamiento: editSelectedTreatmentObject.name,
+                    specialty: editSelectedTreatmentObject.specialty,
+                    numeroCita: citaTxt,
+                    observaciones: document.getElementById('edit-observaciones').value,
+                    responsable: document.getElementById('edit-responsable-select').value, 
+                    piso: document.getElementById('edit-piso-select').value,
+                };
+                
+                if (db) {
+                    const recordRef = doc(db, "registros", recordId);
+                    await updateDoc(recordRef, updatedRecord);
+                } else {
+                    const index = allRecords.findIndex(r => r.id.toString() === recordId);
+                    if (index > -1) {
+                        allRecords[index] = {...allRecords[index], ...updatedRecord};
+                        saveAllRecords();
+                        renderRecentRecords();
+                    }
+                }
+                editRecordModal.classList.add('hidden');
+            };
+
+            loadResponsables();
+            pisoSelect.value = localStorage.getItem('selectedPiso') || 'SUBSUELO';
+        }
+
+        function exportToXlsx(filename, rows) {
+            const header = ['Factura', 'Fecha', 'Tratamiento', 'Especialidad', 'Cita', 'Responsable', 'Piso', 'Observaciones'];
+            const data = rows.map(row => ({
+                Factura: row.factura,
+                Fecha: formatToShortDate(row.fecha),
+                Tratamiento: row.tratamiento,
+                Especialidad: row.specialty,
+                Cita: row.numeroCita.replace(/[()]/g, '').trim(),
+                Responsable: row.responsable,
+                Piso: row.piso,
+                Observaciones: row.observaciones
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(data, { header });
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Registros");
+            XLSX.writeFile(wb, filename);
+        }
+
+        document.getElementById('close-modal-button').onclick = () => document.getElementById('all-records-modal').classList.add('hidden');
+        navButtons.forEach(button => button.onclick = () => switchTab(button.dataset.target));
+        
+        setupApp();
+        setupFirebase().then(() => {
+            switchTab('registro-citas');
+        });
+    </script>
+</body>
+</html>
