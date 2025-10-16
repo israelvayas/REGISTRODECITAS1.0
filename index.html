@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú de Inicio Interactivo</title>
+    <title>Gestion Despachos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
             background-color: #f3f4f6; /* gray-100 */
         }
         /* Animación para el contenido */
-        #main-content > div {
+        #main-content > div, #welcome-screen {
             animation: fadeIn 0.5s ease-in-out;
         }
         @keyframes fadeIn {
@@ -45,16 +45,40 @@
     </style>
 </head>
 <body>
+    <!-- Pantalla de Bienvenida -->
+    <div id="welcome-screen" class="min-h-screen flex items-center justify-center">
+        <div class="text-center p-8 bg-white shadow-2xl rounded-2xl max-w-lg w-full">
+            <div class="flex items-center justify-center mb-4">
+                <svg class="w-10 h-10 text-indigo-600 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.75A.75.75 0 013 4.5h.75m0 0H21m-9 6h9M3.75 9h.008v.008H3.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                <h1 class="text-4xl font-bold text-gray-800">Gestion Despachos</h1>
+            </div>
+            <p class="text-gray-600 mt-2 mb-8">Selecciona una opción para comenzar.</p>
+            <div class="space-y-4">
+                <button id="goto-register-button" class="w-full bg-indigo-600 text-white py-4 px-6 rounded-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 flex items-center justify-center text-lg">
+                    <span class="text-3xl mr-3">📠</span> Registro de Facturas
+                </button>
+                <button id="goto-units-button" class="w-full bg-gray-700 text-white py-4 px-6 rounded-lg hover:bg-gray-800 transition-transform transform hover:scale-105 flex items-center justify-center text-lg">
+                    <span class="text-3xl mr-3">📋</span> Control de Unidades
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <div id="app-container" class="min-h-screen">
+    <!-- Contenedor Principal de la App (oculto por defecto) -->
+    <div id="app-container" class="min-h-screen hidden">
         <!-- Barra de Navegación Superior -->
         <nav class="bg-white shadow-md">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <!-- Logo y Menú Principal -->
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 text-gray-800 font-bold text-xl">
-                            Mi App
+                        <div class="flex-shrink-0 text-gray-800 font-bold text-xl flex items-center">
+                             <svg class="w-6 h-6 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.75A.75.75 0 013 4.5h.75m0 0H21m-9 6h9M3.75 9h.008v.008H3.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            </svg>
+                            Gestion Despachos
                         </div>
                         <div class="hidden md:block">
                             <div class="ml-10 flex items-baseline space-x-4">
@@ -84,7 +108,7 @@
                                 <option>PISO 3</option>
                             </select>
                         </div>
-                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium">Salir</button>
+                        <button id="logout-button" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium">Salir</button>
                     </div>
                 </div>
             </div>
@@ -99,7 +123,7 @@
             </div>
         </main>
         
-        <!-- Modal para ver todos los registros -->
+        <!-- Modals... (el resto del HTML es idéntico) -->
         <div id="all-records-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[90vh] flex flex-col modal-content">
                 <div class="p-4 border-b flex justify-between items-center">
@@ -117,6 +141,7 @@
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Factura</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Fecha</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tratamiento</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Cantidad</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Cita</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Responsable</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Piso</th>
@@ -130,7 +155,6 @@
             </div>
         </div>
 
-        <!-- Modal para editar responsables -->
         <div id="edit-responsables-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
              <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-content">
                 <div class="p-4 border-b flex justify-between items-center">
@@ -156,7 +180,6 @@
             </div>
         </div>
         
-        <!-- Modal para editar registro -->
         <div id="edit-record-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-xl modal-content">
                 <div class="p-4 border-b flex justify-between items-center">
@@ -169,7 +192,7 @@
                         <div><label for="edit-appointment-date" class="block text-sm font-medium text-gray-700">Fecha</label><input type="date" id="edit-appointment-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
                         <div><label for="edit-factura-full" class="block text-sm font-medium text-gray-700">Número de Factura</label><input type="text" id="edit-factura-full" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
                         <div><label for="edit-treatment-search" class="block text-sm font-medium text-gray-700">Tratamiento</label><div class="relative mt-1"><input type="text" id="edit-treatment-search" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" placeholder="Escribe para buscar..." autocomplete="off" required><div id="edit-treatment-results" class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-lg hidden"></div></div></div>
-                        <div id="edit-specialty-selector-container" class="hidden"><label for="edit-specialty-select" class="block text-sm font-medium text-gray-700">Especialidad (especificar)</label><select id="edit-specialty-select" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></select></div>
+                        <div><label for="edit-cantidad" class="block text-sm font-medium text-gray-700">Cantidad</label><input type="number" id="edit-cantidad" min="1" value="1" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
                         <div><label class="block text-sm font-medium text-gray-700">Número de Cita</label><div class="mt-1 flex flex-wrap gap-2" id="edit-cita-selector"><button type="button" data-cita="1" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">1ra</button><button type="button" data-cita="2" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">2da</button><button type="button" data-cita="3" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">3ra</button><button type="button" data-cita="4" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">4ta</button><button type="button" data-cita="5" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">5ta</button><button type="button" data-cita="Resto de Material" class="cita-button border text-sm border-gray-300 rounded-md px-2 h-10">Resto Mat.</button></div></div>
                         <div><label for="edit-responsable-select" class="block text-sm font-medium text-gray-700">Responsable</label><select id="edit-responsable-select" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></select></div>
                         <div><label for="edit-piso-select" class="block text-sm font-medium text-gray-700">Piso</label><select id="edit-piso-select" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"><option>SUBSUELO</option><option>PLANTA BAJA</option><option>PISO 1</option><option>PISO 2</option><option>PISO 3</option></select></div>
@@ -202,11 +225,39 @@
 
         const mainContent = document.getElementById('main-content');
         const navButtons = document.querySelectorAll('.nav-button');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const appContainer = document.getElementById('app-container');
+        const gotoRegisterButton = document.getElementById('goto-register-button');
+        const gotoUnitsButton = document.getElementById('goto-units-button');
+        const logoutButton = document.getElementById('logout-button');
         
         let allRecords = [];
         let responsables = [];
         let db, recordsCollection;
         let editSelectedTreatmentObject = null;
+        let isFirebaseInitialized = false;
+        
+        function showApp(defaultTab) {
+            welcomeScreen.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            if (!isFirebaseInitialized) {
+                setupFirebase().then(() => {
+                    setupApp();
+                    switchTab(defaultTab);
+                    isFirebaseInitialized = true;
+                });
+            } else {
+                switchTab(defaultTab);
+            }
+        }
+
+        gotoRegisterButton.onclick = () => showApp('registro-citas');
+        gotoUnitsButton.onclick = () => showApp('control-unidades');
+
+        logoutButton.onclick = () => {
+            appContainer.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        };
 
         // --- FIREBASE SETUP ---
         async function setupFirebase() {
@@ -231,7 +282,7 @@
                     if(document.getElementById('citas-list')) {
                         renderRecentRecords();
                     }
-                     if(document.getElementById('all-records-modal').classList.contains('hidden') === false) {
+                     if(document.getElementById('all-records-modal') && document.getElementById('all-records-modal').classList.contains('hidden') === false) {
                         const viewAllButton = document.getElementById('view-all-button');
                         if(viewAllButton) viewAllButton.click();
                      }
@@ -263,6 +314,7 @@
                                 <div><label for="appointment-date" class="block text-sm font-medium text-gray-700">Fecha</label><input type="date" id="appointment-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
                                 <div><label for="factura-prefix" class="block text-sm font-medium text-gray-700">Número de Factura</label><div class="mt-1 flex rounded-md shadow-sm"><select id="factura-prefix" class="block w-1/2 px-3 py-2 border border-gray-300 rounded-l-md"><option>002-214-0000</option><option>002-215-0000</option></select><input type="text" id="factura-suffix" class="block w-1/2 px-3 py-2 border border-l-0 border-gray-300 rounded-r-md" placeholder="12345" maxlength="5" pattern="\\d{5}" required></div><p id="factura-display" class="mt-2 text-sm text-gray-500">#Factura: -</p></div>
                                 <div><label for="treatment-search" class="block text-sm font-medium text-gray-700">Tratamiento</label><div class="relative mt-1"><input type="text" id="treatment-search" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" placeholder="Escribe para buscar..." autocomplete="off" required><div id="treatment-results" class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-lg hidden"></div></div></div>
+                                <div><label for="cantidad" class="block text-sm font-medium text-gray-700">Cantidad</label><input type="number" id="cantidad" min="1" value="1" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
                                 <div><label class="block text-sm font-medium text-gray-700">Número de Cita</label><div class="mt-1 flex flex-wrap gap-2" id="cita-selector"><button type="button" data-cita="1" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">1ra</button><button type="button" data-cita="2" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">2da</button><button type="button" data-cita="3" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">3ra</button><button type="button" data-cita="4" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">4ta</button><button type="button" data-cita="5" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10 flex items-center justify-center hover:bg-gray-100">5ta</button><button type="button" data-cita="Resto de Material" class="cita-button border text-sm border-gray-300 rounded-md px-2 h-10 flex items-center justify-center hover:bg-gray-100">Resto Mat.</button></div></div>
                                 <div><label for="observaciones" class="block text-sm font-medium text-gray-700">Observaciones</label><textarea id="observaciones" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></textarea></div>
                                 <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Guardar Registro</button>
@@ -312,6 +364,7 @@
                   facturaDisplay = document.getElementById('factura-display'),
                   searchInput = document.getElementById('treatment-search'),
                   resultsContainer = document.getElementById('treatment-results'),
+                  cantidadInput = document.getElementById('cantidad'),
                   citaButtons = document.querySelectorAll('.cita-button'),
                   observacionesInput = document.getElementById('observaciones'),
                   citaForm = document.getElementById('cita-form'),
@@ -334,16 +387,16 @@
                 resultsContainer.classList.toggle('hidden', !query);
                 if (!query) return;
 
-                const filtered = treatments.filter(t => t.name.toLowerCase().includes(query));
+                const filtered = treatments.filter(t => (`${t.name} / ${t.specialty}`).toLowerCase().includes(query));
                 resultsContainer.innerHTML = '';
                 filtered.forEach(treatment => {
                     const item = document.createElement('a');
                     item.href = '#';
                     item.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100';
-                    item.innerHTML = `${treatment.name} <span class="text-xs text-gray-500">(${treatment.specialty})</span>`;
+                    item.innerHTML = `${treatment.name} / ${treatment.specialty}`;
                     item.onclick = (e) => {
                         e.preventDefault();
-                        searchInput.value = treatment.name;
+                        searchInput.value = item.textContent;
                         selectedTreatmentObject = treatment;
                         resultsContainer.classList.add('hidden');
                     };
@@ -363,7 +416,20 @@
 
             citaForm.onsubmit = async (e) => {
                 e.preventDefault();
-                if (!selectedTreatmentObject) selectedTreatmentObject = treatments.find(t => t.name.toLowerCase() === searchInput.value.toLowerCase()) || { name: searchInput.value, specialty: 'N/A' };
+                const fullTreatmentText = searchInput.value;
+                const isValidTreatment = treatments.some(t => `${t.name} / ${t.specialty}` === fullTreatmentText);
+                if (!isValidTreatment) {
+                    alert("Por favor, selecciona un tratamiento válido de la lista.");
+                    return;
+                }
+
+                if (!selectedTreatmentObject || `${selectedTreatmentObject.name} / ${selectedTreatmentObject.specialty}` !== fullTreatmentText) {
+                    const parts = fullTreatmentText.split(' / ');
+                    const name = parts[0].trim();
+                    const specialty = parts.slice(1).join(' / ').trim();
+                    selectedTreatmentObject = treatments.find(t => t.name === name && t.specialty === specialty);
+                }
+
                 const citaSel = document.querySelector('.cita-button.selected');
                 let citaTxt = '';
                 if(citaSel) {
@@ -377,6 +443,7 @@
                     factura: facturaNumero,
                     tratamiento: selectedTreatmentObject.name,
                     specialty: selectedTreatmentObject.specialty,
+                    cantidad: cantidadInput.value,
                     numeroCita: citaTxt,
                     observaciones: observacionesInput.value,
                     responsable: document.getElementById('responsable-select').value,
@@ -396,6 +463,7 @@
                 citaForm.reset();
                 selectedTreatmentObject = null;
                 dateInput.value = new Date().toISOString().split('T')[0];
+                cantidadInput.value = 1;
                 citaButtons.forEach(btn => btn.classList.remove('selected'));
                 updateFacturaDisplay();
             };
@@ -408,12 +476,14 @@
                 const recordId = li.dataset.id;
 
                 if (targetButton.classList.contains('delete-button')) {
-                    if (db) {
-                       await deleteDoc(doc(db, "registros", recordId));
-                    } else {
-                        allRecords = allRecords.filter(r => r.id.toString() !== recordId.toString());
-                        saveAllRecords();
-                        renderRecentRecords();
+                    if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
+                        if (db) {
+                           await deleteDoc(doc(db, "registros", recordId));
+                        } else {
+                            allRecords = allRecords.filter(r => r.id.toString() !== recordId.toString());
+                            saveAllRecords();
+                            renderRecentRecords();
+                        }
                     }
                 } else if (targetButton.classList.contains('edit-button')) {
                     openEditModal(recordId);
@@ -431,14 +501,28 @@
                     records.forEach(r => {
                         const row = tableBody.insertRow();
                         row.dataset.id = r.id;
-                        row.innerHTML = `<td class="text-left py-3 px-4">${r.factura}</td><td class="text-left py-3 px-4">${formatToShortDate(r.fecha)}</td><td class="text-left py-3 px-4">${r.tratamiento} / ${r.specialty}</td><td class="text-left py-3 px-4">${r.numeroCita.replace(/[()]/g, '')}</td><td class="text-left py-3 px-4">${r.responsable}</td><td class="text-left py-3 px-4">${r.piso}</td><td class="text-left py-3 px-4">${r.observaciones}</td><td class="text-left py-3 px-4"><button class="edit-button text-blue-500 hover:text-blue-700">Editar</button></td>`;
+                        row.innerHTML = `<td class="text-left py-3 px-4">${r.factura}</td><td class="text-left py-3 px-4">${formatToShortDate(r.fecha)}</td><td class="text-left py-3 px-4">${r.tratamiento} / ${r.specialty}</td><td class="text-left py-3 px-4">${r.cantidad}</td><td class="text-left py-3 px-4">${r.numeroCita.replace(/[()]/g, '')}</td><td class="text-left py-3 px-4">${r.responsable}</td><td class="text-left py-3 px-4">${r.piso}</td><td class="text-left py-3 px-4">${r.observaciones}</td><td class="text-left py-3 px-4"><button class="edit-button text-blue-500 hover:text-blue-700 mr-2">Editar</button><button class="delete-button text-red-500 hover:text-red-700">Eliminar</button></td>`;
                     });
                 }
                 
-                tableBody.onclick = (e) => {
-                    if (e.target.classList.contains('edit-button')) {
-                        const row = e.target.closest('tr');
-                        openEditModal(row.dataset.id);
+                tableBody.onclick = async (e) => {
+                    const targetButton = e.target.closest('button');
+                    if (!targetButton) return;
+                    
+                    const row = targetButton.closest('tr');
+                    const recordId = row.dataset.id;
+
+                    if (targetButton.classList.contains('edit-button')) {
+                        openEditModal(recordId);
+                    } else if (targetButton.classList.contains('delete-button')) {
+                         if (db) {
+                           await deleteDoc(doc(db, "registros", recordId));
+                        } else {
+                            allRecords = allRecords.filter(r => r.id.toString() !== recordId.toString());
+                            saveAllRecords();
+                            renderAll(allRecords); 
+                            renderRecentRecords();
+                        }
                     }
                 }
 
@@ -471,7 +555,7 @@
                     <div>
                         <p class="font-semibold text-gray-800">${record.factura}</p>
                         <p class="text-sm text-gray-600">Fecha: ${formatToShortDate(record.fecha)}</p>
-                        <p class="text-sm text-gray-600 font-medium">Tratamiento: ${record.tratamiento} / ${record.specialty}${record.numeroCita}</p>
+                        <p class="text-sm text-gray-600 font-medium">Tratamiento: ${record.tratamiento} / ${record.specialty} (Cant: ${record.cantidad})${record.numeroCita}</p>
                         <p class="text-sm text-gray-500">Resp: ${record.responsable} - Piso: ${record.piso}</p>
                         ${record.observaciones ? `<p class="text-xs text-gray-500 mt-1"><em>Obs: ${record.observaciones}</em></p>` : ''}
                     </div>
@@ -487,24 +571,25 @@
             const record = allRecords.find(r => r.id.toString() === recordId.toString());
             if (!record) return;
 
+            editSelectedTreatmentObject = { name: record.tratamiento, specialty: record.specialty };
+
             const modal = document.getElementById('edit-record-modal');
             const idInput = document.getElementById('edit-record-id');
             const dateInput = document.getElementById('edit-appointment-date');
             const fullFacturaInput = document.getElementById('edit-factura-full');
             const treatmentInput = document.getElementById('edit-treatment-search');
             const treatmentResults = document.getElementById('edit-treatment-results');
+            const cantidadInput = document.getElementById('edit-cantidad');
             const citaSelector = document.getElementById('edit-cita-selector');
             const obsInput = document.getElementById('edit-observaciones');
             const editResponsableSelect = document.getElementById('edit-responsable-select');
             const editPisoSelect = document.getElementById('edit-piso-select');
-            const specialtyContainer = document.getElementById('edit-specialty-selector-container');
-            const specialtySelect = document.getElementById('edit-specialty-select');
-
 
             idInput.value = record.id;
             dateInput.value = record.fecha;
             fullFacturaInput.value = record.factura.replace('#Factura:', '').trim();
-            treatmentInput.value = record.tratamiento;
+            treatmentInput.value = `${record.tratamiento} / ${record.specialty}`;
+            cantidadInput.value = record.cantidad || 1;
             obsInput.value = record.observaciones;
 
             editResponsableSelect.innerHTML = document.getElementById('responsable-select').innerHTML;
@@ -526,23 +611,22 @@
                 if (!wasSelected) button.classList.add('selected');
             });
             
-            // Lógica de búsqueda predictiva para el modal de edición
             treatmentInput.addEventListener('input', () => {
                 editSelectedTreatmentObject = null;
                 const query = treatmentInput.value.toLowerCase();
                 treatmentResults.classList.toggle('hidden', !query);
                 if (!query) return;
 
-                const filtered = treatments.filter(t => t.name.toLowerCase().includes(query));
+                const filtered = treatments.filter(t => `${t.name} / ${t.specialty}`.toLowerCase().includes(query));
                 treatmentResults.innerHTML = '';
                 filtered.forEach(treatment => {
                     const item = document.createElement('a');
                     item.href = '#';
                     item.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100';
-                    item.innerHTML = `${treatment.name} <span class="text-xs text-gray-500">(${treatment.specialty})</span>`;
+                    item.textContent = `${treatment.name} / ${treatment.specialty}`;
                     item.onclick = (e) => {
                         e.preventDefault();
-                        treatmentInput.value = treatment.name;
+                        treatmentInput.value = item.textContent;
                         editSelectedTreatmentObject = treatment;
                         treatmentResults.classList.add('hidden');
                     };
@@ -645,10 +729,19 @@
                 e.preventDefault();
                 
                 const recordId = document.getElementById('edit-record-id').value;
-                const searchInput = document.getElementById('edit-treatment-search');
+                const searchInput = document.getElementById('edit-treatment-search').value;
                 
-                if (!editSelectedTreatmentObject || editSelectedTreatmentObject.name !== searchInput.value) {
-                    editSelectedTreatmentObject = treatments.find(t => t.name.toLowerCase() === searchInput.value.toLowerCase()) || { name: searchInput.value, specialty: 'N/A' };
+                const isValidTreatment = treatments.some(t => `${t.name} / ${t.specialty}` === searchInput);
+                if (!isValidTreatment) {
+                    alert("Por favor, selecciona un tratamiento válido de la lista.");
+                    return;
+                }
+
+                if (!editSelectedTreatmentObject || `${editSelectedTreatmentObject.name} / ${editSelectedTreatmentObject.specialty}` !== searchInput) {
+                    const parts = searchInput.split(' / ');
+                    const name = parts[0].trim();
+                    const specialty = parts.slice(1).join(' / ').trim();
+                    editSelectedTreatmentObject = treatments.find(t => t.name === name && t.specialty === specialty) || { name: name, specialty: specialty || 'N/A' };
                 }
 
                 const citaSel = document.getElementById('edit-cita-selector').querySelector('.cita-button.selected');
@@ -664,6 +757,7 @@
                     factura: facturaNumero,
                     tratamiento: editSelectedTreatmentObject.name,
                     specialty: editSelectedTreatmentObject.specialty,
+                    cantidad: document.getElementById('edit-cantidad').value,
                     numeroCita: citaTxt,
                     observaciones: document.getElementById('edit-observaciones').value,
                     responsable: document.getElementById('edit-responsable-select').value, 
@@ -689,12 +783,13 @@
         }
 
         function exportToXlsx(filename, rows) {
-            const header = ['Factura', 'Fecha', 'Tratamiento', 'Especialidad', 'Cita', 'Responsable', 'Piso', 'Observaciones'];
+            const header = ['Factura', 'Fecha', 'Tratamiento', 'Especialidad', 'Cantidad', 'Cita', 'Responsable', 'Piso', 'Observaciones'];
             const data = rows.map(row => ({
                 Factura: row.factura,
                 Fecha: formatToShortDate(row.fecha),
                 Tratamiento: row.tratamiento,
                 Especialidad: row.specialty,
+                Cantidad: row.cantidad,
                 Cita: row.numeroCita.replace(/[()]/g, '').trim(),
                 Responsable: row.responsable,
                 Piso: row.piso,
@@ -717,3 +812,4 @@
     </script>
 </body>
 </html>
+
