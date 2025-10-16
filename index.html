@@ -37,7 +37,7 @@
         /* Estilos para el modal */
          .modal-content {
             animation: zoomIn 0.3s ease-out;
-        }
+         }
         @keyframes zoomIn {
             from { transform: scale(0.9); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -45,8 +45,7 @@
     </style>
 </head>
 <body>
-    <!-- Pantalla de Bienvenida -->
-    <div id="welcome-screen" class="min-h-screen flex items-center justify-center">
+    <div id="welcome-screen" class="min-h-screen flex items-center justify-center hidden">
         <div class="text-center p-8 bg-white shadow-2xl rounded-2xl max-w-lg w-full">
             <div class="flex items-center justify-center mb-4">
                 <svg class="w-10 h-10 text-indigo-600 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -59,54 +58,46 @@
                 <button id="goto-register-button" class="w-full bg-indigo-600 text-white py-4 px-6 rounded-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 flex items-center justify-center text-lg">
                     <span class="text-3xl mr-3">📠</span> Registro de Facturas
                 </button>
-                <button id="goto-units-button" class="w-full bg-gray-700 text-white py-4 px-6 rounded-lg hover:bg-gray-800 transition-transform transform hover:scale-105 flex items-center justify-center text-lg">
-                    <span class="text-3xl mr-3">📋</span> Control de Unidades
-                </button>
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- Contenedor Principal de la App (oculto por defecto) -->
-    <div id="app-container" class="min-h-screen hidden">
-        <!-- Barra de Navegación Superior -->
+    <div id="app-container" class="min-h-screen">
         <nav class="bg-white shadow-md">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
-                    <!-- Logo y Menú Principal -->
                     <div class="flex items-center">
                         <div class="flex-shrink-0 text-gray-800 font-bold text-xl flex items-center">
                              <svg class="w-6 h-6 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.75A.75.75 0 013 4.5h.75m0 0H21m-9 6h9M3.75 9h.008v.008H3.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.75A.75.75 0 013 4.5h.75m0 0H21m-9 6h9M3.75 9h.008v.008H3.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                             </svg>
-                            Gestion Despachos
+                           Gestion Despachos
                         </div>
                         <div class="hidden md:block">
                             <div class="ml-10 flex items-baseline space-x-4">
-                                <button data-target="registro-citas" class="nav-button bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Registro Citas</button>
-                                <button data-target="control-unidades" class="nav-button text-gray-700 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Control Unidades</button>
-                            </div>
+                                 <button data-target="registro-citas" class="nav-button bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Registro Facturas</button>
+                                </div>
                         </div>
                     </div>
-                     <!-- Selectores de Responsable y Piso -->
-                    <div class="hidden md:flex items-center space-x-4">
-                        <div>
+                     <div class="hidden md:flex items-center space-x-4">
+                         <div>
                             <label for="responsable-select" class="sr-only">Responsable</label>
                             <div class="flex items-center">
-                                <select id="responsable-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"></select>
+                                 <select id="responsable-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"></select>
                                 <button id="edit-responsables-button" class="ml-2 p-1 text-gray-500 hover:text-gray-800">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828zM5 12V7a2 2 0 012-2h2.586l-4.586 4.586V12zM15 14H5a2 2 0 01-2-2V5a2 2 0 012-2h4.586l2-2h-2.172a4 4 0 00-4 4v10a4 4 0 004 4h10a4 4 0 004-4v-2.172l-2 2V14z"></path></svg>
                                 </button>
                             </div>
-                        </div>
+                         </div>
                         <div>
                             <label for="piso-select" class="sr-only">Piso</label>
-                            <select id="piso-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                           <select id="piso-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                                 <option>SUBSUELO</option>
                                 <option>PLANTA BAJA</option>
                                 <option>PISO 1</option>
                                 <option>PISO 2</option>
                                 <option>PISO 3</option>
-                            </select>
+                           </select>
                         </div>
                         <button id="logout-button" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium">Salir</button>
                     </div>
@@ -114,16 +105,13 @@
             </div>
         </nav>
 
-        <!-- Contenido Principal -->
         <main>
             <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div id="main-content" class="px-4 py-6 sm:px-0">
-                    <!-- El contenido de las pestañas se cargará aquí -->
-                </div>
+                    </div>
             </div>
         </main>
         
-        <!-- Modals... (el resto del HTML es idéntico) -->
         <div id="all-records-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[90vh] flex flex-col modal-content">
                 <div class="p-4 border-b flex justify-between items-center">
@@ -165,15 +153,15 @@
                     <div>
                         <label for="new-responsable-input" class="block text-sm font-medium text-gray-700">Agregar nuevo responsable:</label>
                         <div class="mt-1 flex">
-                            <input type="text" id="new-responsable-input" class="flex-1 p-2 border border-gray-300 rounded-l-md" placeholder="Nombre Apellido">
+                             <input type="text" id="new-responsable-input" class="flex-1 p-2 border border-gray-300 rounded-l-md" placeholder="Nombre Apellido">
                             <button id="add-responsable-button" class="bg-indigo-600 text-white px-4 py-2 rounded-r-md">Agregar</button>
                         </div>
                     </div>
-                    <div>
+                     <div>
                         <h3 class="text-lg font-medium text-gray-800">Lista Actual:</h3>
                         <ul id="responsables-list-editor" class="mt-2 space-y-2 max-h-60 overflow-y-auto"></ul>
                     </div>
-                </div>
+                 </div>
                 <div class="p-4 bg-gray-50 text-right rounded-b-lg">
                     <button id="save-responsables-button" class="bg-green-600 text-white px-4 py-2 rounded-md">Guardar y Cerrar</button>
                 </div>
@@ -184,23 +172,23 @@
             <div class="bg-white rounded-lg shadow-xl w-full max-w-xl modal-content">
                 <div class="p-4 border-b flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-gray-800">Editar Registro</h2>
-                    <button id="close-edit-record-modal-button" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+                     <button id="close-edit-record-modal-button" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
                 </div>
                 <div class="p-6 max-h-[80vh] overflow-y-auto">
                     <form id="edit-cita-form" class="space-y-4">
                         <input type="hidden" id="edit-record-id">
-                        <div><label for="edit-appointment-date" class="block text-sm font-medium text-gray-700">Fecha</label><input type="date" id="edit-appointment-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
+                         <div><label for="edit-appointment-date" class="block text-sm font-medium text-gray-700">Fecha</label><input type="date" id="edit-appointment-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
                         <div><label for="edit-factura-full" class="block text-sm font-medium text-gray-700">Número de Factura</label><input type="text" id="edit-factura-full" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
-                        <div><label for="edit-treatment-search" class="block text-sm font-medium text-gray-700">Tratamiento</label><div class="relative mt-1"><input type="text" id="edit-treatment-search" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" placeholder="Escribe para buscar..." autocomplete="off" required><div id="edit-treatment-results" class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-lg hidden"></div></div></div>
+                         <div><label for="edit-treatment-search" class="block text-sm font-medium text-gray-700">Tratamiento</label><div class="relative mt-1"><input type="text" id="edit-treatment-search" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" placeholder="Escribe para buscar..." autocomplete="off" required><div id="edit-treatment-results" class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-lg hidden"></div></div></div>
                         <div><label for="edit-cantidad" class="block text-sm font-medium text-gray-700">Cantidad</label><input type="number" id="edit-cantidad" min="1" value="1" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
-                        <div><label class="block text-sm font-medium text-gray-700">Número de Cita</label><div class="mt-1 flex flex-wrap gap-2" id="edit-cita-selector"><button type="button" data-cita="1" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">1ra</button><button type="button" data-cita="2" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">2da</button><button type="button" data-cita="3" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">3ra</button><button type="button" data-cita="4" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">4ta</button><button type="button" data-cita="5" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">5ta</button><button type="button" data-cita="Resto de Material" class="cita-button border text-sm border-gray-300 rounded-md px-2 h-10">Resto Mat.</button></div></div>
+                         <div><label class="block text-sm font-medium text-gray-700">Número de Cita</label><div class="mt-1 flex flex-wrap gap-2" id="edit-cita-selector"><button type="button" data-cita="1" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">1ra</button><button type="button" data-cita="2" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">2da</button><button type="button" data-cita="3" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">3ra</button><button type="button" data-cita="4" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">4ta</button><button type="button" data-cita="5" class="cita-button border text-sm border-gray-300 rounded-md w-12 h-10">5ta</button><button type="button" data-cita="Resto de Material" class="cita-button border text-sm border-gray-300 rounded-md px-2 h-10">Resto Mat.</button></div></div>
                         <div><label for="edit-responsable-select" class="block text-sm font-medium text-gray-700">Responsable</label><select id="edit-responsable-select" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></select></div>
                         <div><label for="edit-piso-select" class="block text-sm font-medium text-gray-700">Piso</label><select id="edit-piso-select" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"><option>SUBSUELO</option><option>PLANTA BAJA</option><option>PISO 1</option><option>PISO 2</option><option>PISO 3</option></select></div>
                         <div><label for="edit-observaciones" class="block text-sm font-medium text-gray-700">Observaciones</label><textarea id="edit-observaciones" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></textarea></div>
-                        <div class="pt-4 flex justify-end space-x-2">
+                         <div class="pt-4 flex justify-end space-x-2">
                              <button type="button" id="cancel-edit-button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md">Cancelar</button>
                             <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md">Guardar Cambios</button>
-                        </div>
+                         </div>
                     </form>
                 </div>
             </div>
@@ -212,7 +200,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+        
         // --- CONFIGURACIÓN DE FIREBASE ---
         const firebaseConfig = {
           apiKey: "AIzaSyDsVgLJx1EFPGNLIM37hc6PjOuPlQ13AhQ",
@@ -222,39 +210,25 @@
           messagingSenderId: "855602758465",
           appId: "1:855602758465:web:f6c84a7a21c7c716e117c0"
         };
-
+        
         const mainContent = document.getElementById('main-content');
         const navButtons = document.querySelectorAll('.nav-button');
         const welcomeScreen = document.getElementById('welcome-screen');
         const appContainer = document.getElementById('app-container');
-        const gotoRegisterButton = document.getElementById('goto-register-button');
-        const gotoUnitsButton = document.getElementById('goto-units-button');
+        // VARIABLES DE BOTONES DE INICIO ELIMINADAS
         const logoutButton = document.getElementById('logout-button');
         
         let allRecords = [];
         let responsables = [];
         let db, recordsCollection;
         let editSelectedTreatmentObject = null;
-        let isFirebaseInitialized = false;
         
-        function showApp(defaultTab) {
-            welcomeScreen.classList.add('hidden');
-            appContainer.classList.remove('hidden');
-            if (!isFirebaseInitialized) {
-                setupFirebase().then(() => {
-                    setupApp();
-                    switchTab(defaultTab);
-                    isFirebaseInitialized = true;
-                });
-            } else {
-                switchTab(defaultTab);
-            }
-        }
-
-        gotoRegisterButton.onclick = () => showApp('registro-citas');
-        gotoUnitsButton.onclick = () => showApp('control-unidades');
-
+        // --- FUNCIÓN showApp ELIMINADA PORQUE YA NO ES NECESARIA ---
+        
+        // --- LISTENERS DE BOTONES DE INICIO ELIMINADOS ---
         logoutButton.onclick = () => {
+            // Se puede modificar para que recargue la página o borre el formulario
+            // Por ahora, simplemente oculta la app y muestra la pantalla de bienvenida (que está vacía)
             appContainer.classList.add('hidden');
             welcomeScreen.classList.remove('hidden');
         };
@@ -262,8 +236,7 @@
         // --- FIREBASE SETUP ---
         async function setupFirebase() {
              if (!firebaseConfig.apiKey) {
-                console.error("La configuración de Firebase está vacía. La app usará almacenamiento local.");
-                alert("Configuración de Firebase no encontrada. Los datos se guardarán localmente en este navegador y no se sincronizarán en la nube.");
+                console.error("La configuración de Firebase está vacía. La app usará almacenamiento local para las facturas.");
                 allRecords = JSON.parse(localStorage.getItem('allRecords')) || [];
                 return;
             }
@@ -282,15 +255,16 @@
                     if(document.getElementById('citas-list')) {
                         renderRecentRecords();
                     }
-                     if(document.getElementById('all-records-modal') && document.getElementById('all-records-modal').classList.contains('hidden') === false) {
+                     if(document.getElementById('all-records-modal') && !document.getElementById('all-records-modal').classList.contains('hidden')) {
                         const viewAllButton = document.getElementById('view-all-button');
                         if(viewAllButton) viewAllButton.click();
                      }
-                }, (error) => {
+                 }, (error) => {
                     console.error("Error en el snapshot de Firestore: ", error);
                     alert("Error al recibir datos de la nube. Es posible que las reglas de seguridad de Firestore no estén configuradas correctamente.");
                 });
-            } catch (error) {
+            } catch (error)
+            {
                 console.error("Error initializing Firebase:", error);
                 alert("Error al conectar con la base de datos en la nube. Revisa tu configuración de Firebase.");
                 allRecords = JSON.parse(localStorage.getItem('allRecords')) || [];
@@ -303,14 +277,15 @@
             }
         }
 
+        // --- DEFINICION DE PAGINAS Y DATOS ---
         const pages = {
             'registro-citas': `
                 <div class="bg-white p-8 rounded-lg shadow-lg">
                     <h1 class="text-3xl font-bold text-gray-900 mb-6">Registro de Facturas</h1>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Nueva Factura</h2>
-                            <form id="cita-form" class="space-y-4">
+                           <form id="cita-form" class="space-y-4">
                                 <div><label for="appointment-date" class="block text-sm font-medium text-gray-700">Fecha</label><input type="date" id="appointment-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" required></div>
                                 <div><label for="factura-prefix" class="block text-sm font-medium text-gray-700">Número de Factura</label><div class="mt-1 flex rounded-md shadow-sm"><select id="factura-prefix" class="block w-1/2 px-3 py-2 border border-gray-300 rounded-l-md"><option>002-214-0000</option><option>002-215-0000</option></select><input type="text" id="factura-suffix" class="block w-1/2 px-3 py-2 border border-l-0 border-gray-300 rounded-r-md" placeholder="12345" maxlength="5" pattern="\\d{5}" required></div><p id="factura-display" class="mt-2 text-sm text-gray-500">#Factura: -</p></div>
                                 <div><label for="treatment-search" class="block text-sm font-medium text-gray-700">Tratamiento</label><div class="relative mt-1"><input type="text" id="treatment-search" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" placeholder="Escribe para buscar..." autocomplete="off" required><div id="treatment-results" class="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-lg hidden"></div></div></div>
@@ -319,31 +294,29 @@
                                 <div><label for="observaciones" class="block text-sm font-medium text-gray-700">Observaciones</label><textarea id="observaciones" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm"></textarea></div>
                                 <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Guardar Registro</button>
                             </form>
-                        </div>
+                         </div>
                         <div>
                             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Últimos 5 Registros</h2>
                             <ul id="citas-list" class="space-y-3"></ul>
-                             <button id="view-all-button" class="mt-4 w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300">Ver Todos los Registros</button>
+                            <button id="view-all-button" class="mt-4 w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300">Ver Todos los Registros</button>
                         </div>
                     </div>
                 </div>`,
-            'control-unidades': `
-                 <div class="bg-white p-8 rounded-lg shadow-lg">
-                    <h1 class="text-3xl font-bold text-gray-900">Control de Unidades</h1>
-                    <table class="min-w-full bg-white mt-6">
-                        <thead class="bg-gray-800 text-white"><tr><th class="w-1/3 text-left py-3 px-4 uppercase font-semibold text-sm">Unidad</th><th class="w-1/3 text-left py-3 px-4 uppercase font-semibold text-sm">Estado</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Acciones</th></tr></thead>
-                        <tbody class="text-gray-700"><tr><td class="text-left py-3 px-4">Sillón Odontológico #1</td><td class="text-left py-3 px-4"><span class="bg-green-200 text-green-800 py-1 px-3 rounded-full text-xs">Activo</span></td><td class="text-left py-3 px-4"><button class="text-blue-500 hover:text-blue-700">Editar</button></td></tr></tbody>
-                    </table>
-                </div>`
+            // PLANTILLA HTML DE 'control-unidades' ELIMINADA
         };
 
         const treatments = [
-            { name: 'RASPADO Y ALISADO RADICULAR A CAMPO CERRADO', specialty: 'PERIODONCIA' }, { name: 'GINGIVECTOMIA POR ARCADA', specialty: 'PERIODONCIA' }, { name: 'ALARGAMIENTO CORONARIO', specialty: 'PERIODONCIA' }, { name: 'FRENECTOMIA', specialty: 'PERIODONCIA' }, { name: 'PROFILAXIS Y APLICACIÓN FLÚOR', specialty: 'OPERATORIA DENTAL' }, { name: 'SELLANTES', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA SIMPLE', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA COMPUESTA', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA COMPLEJA', specialty: 'OPERATORIA DENTAL' }, { name: 'PROTESIS TOTAL SUPERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS TOTAL INFERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL SUPERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL INFERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL SUPERIOR CROMO COBALTO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL INFERIOR CROMO COBALTO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'CORONAS METAL PORCELANA INDIVIDUALES', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PUENTE FIJO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PERNO DE FIBRA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'INCRUSTACIÓN', specialty: 'REHABILITACIÓN ORAL' }, { name: 'ENDODONCIA ANTERIORES (1 CONDUCTO) INCLUYE 5RXS', specialty: 'ENDODONCIA' }, { name: 'ENDODONCIA PREMOLARES (1-2-3 CONDUCTO) INCLUYE 5RXS', specialty: 'ENDODONCIA' }, { name: 'ALIVIO DEL DOLOR', specialty: 'ENDODONCIA' }, { name: 'PROFILAXIS-FLUORIZACIÓN', specialty: 'ODONTOPEDIATRÍA' }, { name: 'PROFILAXIS CON FLUORIZACIÓN CLINPRO FLUOR', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS SIMPLES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS COMPUESTOS', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS COMPLEJOS', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA SIMPLE', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA COMPUESTA', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA COMPLEJA', specialty: 'ODONTOPEDIATRÍA' }, { name: 'SELLANTES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'EXODONCIAS SIMPLES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'ENDODONCIAS INFANTIL', specialty: 'ODONTOPEDIATRÍA' }, { name: 'MANTENEDOR DE ESPACIO', specialty: 'ODONTOPEDIATRÍA' }, { name: 'CARILLA / CORONA DE CELULOIDE', specialty: 'ODONTOPEDIATRÍA' }, { name: 'EXODONCIA SIMPLE', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR SIMPLE', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR COMPLEJO', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR CIRUGÍA', specialty: 'CIRUGÍA' }, { name: 'OPERCULOTOMÍA', specialty: 'CIRUGÍA' }, { name: 'REGULARIZACION DE REBORDE', specialty: 'CIRUGÍA' }, { name: 'PORCIONES EXTRAS', specialty: 'VARIOS' }
+            { name: 'RASPADO Y ALISADO RADICULAR A CAMPO CERRADO', specialty: 'PERIODONCIA' }, { name: 'GINGIVECTOMIA POR ARCADA', specialty: 'PERIODONCIA' }, { name: 'ALARGAMIENTO CORONARIO', specialty: 'PERIODONCIA' }, { name: 'FRENECTOMIA', specialty: 'PERIODONCIA' }, { name: 'PROFILAXIS Y APLICACIÓN FLÚOR', specialty: 'OPERATORIA DENTAL' }, { name: 'SELLANTES', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA SIMPLE', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA COMPUESTA', specialty: 'OPERATORIA DENTAL' }, { name: 'RESINA COMPLEJA', specialty: 'OPERATORIA DENTAL' }, { name: 'PROTESIS TOTAL SUPERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { 
+            name: 'PROTESIS TOTAL INFERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL SUPERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL INFERIOR ACRÍLICA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL SUPERIOR CROMO COBALTO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PROTESIS PARCIAL INFERIOR CROMO COBALTO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'CORONAS METAL PORCELANA INDIVIDUALES', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PUENTE FIJO', specialty: 'REHABILITACIÓN ORAL' }, { name: 'PERNO DE FIBRA', specialty: 'REHABILITACIÓN ORAL' }, { name: 'INCRUSTACIÓN', specialty: 'REHABILITACIÓN ORAL' }, { name: 'ENDODONCIA ANTERIORES (1 CONDUCTO) INCLUYE 5RXS', specialty: 'ENDODONCIA' }, { name: 'ENDODONCIA PREMOLARES (1-2-3 CONDUCTO) INCLUYE 5RXS', specialty: 'ENDODONCIA' }, { name: 'ALIVIO DEL DOLOR', specialty: 'ENDODONCIA' }, { name: 'PROFILAXIS-FLUORIZACIÓN', specialty: 'ODONTOPEDIATRÍA' }, { name: 'PROFILAXIS CON FLUORIZACIÓN CLINPRO FLUOR', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS SIMPLES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS COMPUESTOS', specialty: 'ODONTOPEDIATRÍA' }, { name: 'IONOMEROS COMPLEJOS', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA SIMPLE', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA COMPUESTA', specialty: 'ODONTOPEDIATRÍA' }, { name: 'RESINA COMPLEJA', specialty: 'ODONTOPEDIATRÍA' }, { name: 'SELLANTES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'EXODONCIAS SIMPLES', specialty: 'ODONTOPEDIATRÍA' }, { name: 'ENDODONCIAS INFANTIL', specialty: 'ODONTOPEDIATRÍA' }, { name: 'MANTENEDOR DE ESPACIO', specialty: 'ODONTOPEDIATRÍA' }, { name: 'CARILLA / CORONA DE CELULOIDE', specialty: 'ODONTOPEDIATRÍA' }, { name: 'EXODONCIA SIMPLE', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR SIMPLE', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR COMPLEJO', specialty: 'CIRUGÍA' }, { name: 'TERCER MOLAR CIRUGÍA', specialty: 'CIRUGÍA' }, { name: 'OPERCULOTOMÍA', specialty: 'CIRUGÍA' }, { name: 'REGULARIZACION DE REBORDE', specialty: 'CIRUGÍA' }, { name: 'PORCIONES EXTRAS', specialty: 'VARIOS' }
         ];
 
+        // DATOS DE INSUMOS (defaultInsumos) ELIMINADOS
+        
+        // --- LÓGICA DE NAVEGACIÓN ---
         function switchTab(targetId) {
             mainContent.innerHTML = pages[targetId] || pages['registro-citas'];
             if (targetId === 'registro-citas') setupCitasTab();
+            // LÓGICA DE 'control-unidades' ELIMINADA
             navButtons.forEach(btn => {
                 btn.classList.toggle('bg-gray-900', btn.dataset.target === targetId);
                 btn.classList.toggle('text-white', btn.dataset.target === targetId);
@@ -356,7 +329,10 @@
             const [year, month, day] = dateString.split('-');
             return `${day}/${month}/${year}`;
         }
-
+        
+        // --- FUNCIÓN setupUnidadesTab ELIMINADA ---
+        
+        // --- LÓGICA PARA LA PESTAÑA DE REGISTRO DE CITAS ---
         function setupCitasTab() {
             const dateInput = document.getElementById('appointment-date'),
                   facturaPrefix = document.getElementById('factura-prefix'),
@@ -370,7 +346,7 @@
                   citaForm = document.getElementById('cita-form'),
                   citasList = document.getElementById('citas-list'),
                   viewAllButton = document.getElementById('view-all-button');
-            
+
             let selectedTreatmentObject = null;
             dateInput.value = new Date().toISOString().split('T')[0];
 
@@ -437,7 +413,6 @@
                     citaTxt = citaVal === 'Resto de Material' ? ` (${citaVal})` : ` (${citaSel.textContent} Cita)`;
                 }
                 const facturaNumero = `${facturaPrefix.value}${facturaSuffix.value.padStart(5, '0')}`;
-
                 const newRecord = {
                     fecha: dateInput.value,
                     factura: facturaNumero,
@@ -450,7 +425,7 @@
                     piso: document.getElementById('piso-select').value,
                     timestamp: serverTimestamp()
                 };
-                
+
                 if (db) {
                      await addDoc(recordsCollection, newRecord);
                 } else {
@@ -474,7 +449,6 @@
 
                 const li = targetButton.closest('li');
                 const recordId = li.dataset.id;
-
                 if (targetButton.classList.contains('delete-button')) {
                     if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
                         if (db) {
@@ -495,7 +469,7 @@
                       tableBody = document.getElementById('all-records-table-body'),
                       searchInputModal = document.getElementById('search-records-input'),
                       exportButton = document.getElementById('export-xlsx-button');
-                
+
                 function renderAll(records) {
                     tableBody.innerHTML = '';
                     records.forEach(r => {
@@ -511,13 +485,12 @@
                     
                     const row = targetButton.closest('tr');
                     const recordId = row.dataset.id;
-
                     if (targetButton.classList.contains('edit-button')) {
                         openEditModal(recordId);
                     } else if (targetButton.classList.contains('delete-button')) {
                          if (db) {
                            await deleteDoc(doc(db, "registros", recordId));
-                        } else {
+                         } else {
                             allRecords = allRecords.filter(r => r.id.toString() !== recordId.toString());
                             saveAllRecords();
                             renderAll(allRecords); 
@@ -591,7 +564,6 @@
             treatmentInput.value = `${record.tratamiento} / ${record.specialty}`;
             cantidadInput.value = record.cantidad || 1;
             obsInput.value = record.observaciones;
-
             editResponsableSelect.innerHTML = document.getElementById('responsable-select').innerHTML;
             editResponsableSelect.value = record.responsable;
             editPisoSelect.value = record.piso;
@@ -610,7 +582,7 @@
                 citaButtons.forEach(btn => btn.classList.remove('selected'));
                 if (!wasSelected) button.classList.add('selected');
             });
-            
+
             treatmentInput.addEventListener('input', () => {
                 editSelectedTreatmentObject = null;
                 const query = treatmentInput.value.toLowerCase();
@@ -682,7 +654,11 @@
             }
 
             responsableSelect.onchange = () => localStorage.setItem('selectedResponsable', responsableSelect.value);
-            pisoSelect.onchange = () => localStorage.setItem('selectedPiso', pisoSelect.value);
+            
+            pisoSelect.onchange = () => {
+                localStorage.setItem('selectedPiso', pisoSelect.value);
+                // LÓGICA PARA RECARGAR INSUMOS ELIMINADA
+            };
 
             editBtn.onclick = () => {
                 renderEditorList();
@@ -705,7 +681,7 @@
                     renderEditorList();
                 }
             };
-            
+
             addResponsableBtn.onclick = () => {
                 const newName = newResponsableInput.value.trim().toUpperCase();
                 if (newName && !responsables.includes(newName)) {
@@ -724,10 +700,9 @@
             
             closeEditRecordModalBtn.onclick = () => editRecordModal.classList.add('hidden');
             cancelEditBtn.onclick = () => editRecordModal.classList.add('hidden');
-            
+
             editCitaForm.onsubmit = async (e) => {
                 e.preventDefault();
-                
                 const recordId = document.getElementById('edit-record-id').value;
                 const searchInput = document.getElementById('edit-treatment-search').value;
                 
@@ -751,7 +726,6 @@
                     citaTxt = citaVal === 'Resto de Material' ? ` (${citaVal})` : ` (${citaSel.textContent} Cita)`;
                 }
                 const facturaNumero = document.getElementById('edit-factura-full').value;
-                
                 const updatedRecord = {
                     fecha: document.getElementById('edit-appointment-date').value,
                     factura: facturaNumero,
@@ -762,8 +736,8 @@
                     observaciones: document.getElementById('edit-observaciones').value,
                     responsable: document.getElementById('edit-responsable-select').value, 
                     piso: document.getElementById('edit-piso-select').value,
-                };
-                
+                 };
+
                 if (db) {
                     const recordRef = doc(db, "registros", recordId);
                     await updateDoc(recordRef, updatedRecord);
@@ -795,21 +769,23 @@
                 Piso: row.piso,
                 Observaciones: row.observaciones
             }));
-
             const ws = XLSX.utils.json_to_sheet(data, { header });
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Registros");
             XLSX.writeFile(wb, filename);
         }
 
+        // --- INICIALIZACIÓN DE LA APP ---
         document.getElementById('close-modal-button').onclick = () => document.getElementById('all-records-modal').classList.add('hidden');
         navButtons.forEach(button => button.onclick = () => switchTab(button.dataset.target));
         
+        // Setup general de la app
         setupApp();
-        setupFirebase().then(() => {
-            switchTab('registro-citas');
-        });
+        // Conexión a Firebase para la sección de facturas
+        setupFirebase();
+        // Cargar la pestaña de registro por defecto
+        switchTab('registro-citas');
+
     </script>
 </body>
 </html>
-
